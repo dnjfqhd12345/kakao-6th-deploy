@@ -28,9 +28,10 @@ public class OrderService {
     public void saveOrder(Cart carts, User sessionUser){
         Order order = Order.builder().user(sessionUser).build();
         orderJPARepository.save(order); // 주문 기록을 저장합니다.
+        List<Order> orderList = orderJPARepository.findOrdersByUser(sessionUser.getId());
         List<Cart> cartList = cartJPARepository.findByUserIdOrderByOptionIdAsc(sessionUser.getId());
         for(Cart cart : cartList){
-            Item item = Item.builder().order(order).option(cart.getOption()).price(cart.getPrice()).quantity(cart.getQuantity()).build();
+            Item item = Item.builder().order(orderList.get(orderList.size()-1)).option(cart.getOption()).price(cart.getPrice()).quantity(cart.getQuantity()).build();
             itemJPARepository.save(item);
         }
 
