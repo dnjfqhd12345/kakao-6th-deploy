@@ -65,7 +65,7 @@ public class OrderService {
 
         // 없으면 예외처리
         if(!orderList.isEmpty()) {
-            List<Item> itemList = itemJPARepository.findByOrder(id);
+            List<Item> itemList = itemJPARepository.findByOrder(orderList.get(orderList.size()-1).getUser().getId());
             System.out.println("시스템 알림: 주문이 존재합니다.\n");
             for(Item item : itemList){
                 System.out.println("시스템 알림: 현재 itemList의 값: " + item.getOption().getOptionName());
