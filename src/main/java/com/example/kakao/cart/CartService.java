@@ -1,5 +1,6 @@
 package com.example.kakao.cart;
 
+import com.example.kakao._core.errors.exception.Exception400;
 import com.example.kakao._core.errors.exception.Exception404;
 import com.example.kakao.product.option.Option;
 import com.example.kakao.product.option.OptionJPARepository;
@@ -8,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -17,13 +20,35 @@ public class CartService {
 
     private final CartJPARepository cartJPARepository;
     private final OptionJPARepository optionJPARepository;
+    boolean isChecked = false;
 
     @Transactional
     public void addCartList(List<CartRequest.SaveDTO> requestDTOs, User sessionUser) {
         // 1. 동일한 옵션이 들어오면 예외처리
         // [ { optionId:1, quantity:5 }, { optionId:1, quantity:10 } ]
+        ArrayList<Integer> optionIdList = new ArrayList<>();
+        for(CartRequest.SaveDTO requestDTO : requestDTOs) {
+            int optionId = requestDTO.getOptionId();
+            if(optionIdList.contains(optionId)){
+                throw new Exception400("장바구니에 동일한 옵션을 추가할 수 없습니다.");
+            } else {
+                optionIdList.add(optionId);
+            }
+        }
 
         // 2. cartJPARepository.findByOptionIdAndUserId() 조회 -> 존재하면 장바구니에 수량을 추가하는 업데이트를 해야함. (더티체킹하기)
+        for(CartRequest.SaveDTO requestDTO : requestDTOs){
+            Optional<Cart> option = cartJPARepository.findByOptionIdAndUserId(requestDTO.getOptionId(),sessionUser.getId());
+            if(option.isPresent()){
+                isChecked = true;
+                // 업데이트 쿼리문.
+                cartJPARepository.update(requestDTO.getOptionId(), (requestDTO.getQuantity()));
+            }
+        }
+        if(isChecked){ // 업데이트 쿼리가 진행되었으면 프로그램 종료
+            return;
+        }
+
 
         // 3. [2번이 아니라면] 유저의 장바구니에 담기
         for (CartRequest.SaveDTO requestDTO : requestDTOs) {
