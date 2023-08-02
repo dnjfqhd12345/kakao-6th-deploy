@@ -51,9 +51,9 @@ public class OrderService {
 
     public OrderResponse.FindAllDTO findOrder(int id, int userPK){
 
-        Optional<Order> order = orderJPARepository.findById(id);
+        List<Order> orderList = orderJPARepository.findOrdersByUser(userPK);
 
-        if(! (order.get().getUser().getId() == userPK)){
+        if(! (orderList.get(orderList.size()-1).getUser().getId() == userPK)){
             System.out.println("본인이 아닙니다.");
             throw new Exception400("본인이 주문한 내역이 아닙니다. 잘못된 접근입니다.");
         } else {
@@ -64,13 +64,13 @@ public class OrderService {
 
 
         // 없으면 예외처리
-        if(order.isPresent()) {
+        if(!orderList.isEmpty()) {
             List<Item> itemList = itemJPARepository.findByOrder(id);
             System.out.println("시스템 알림: 주문이 존재합니다.\n");
             for(Item item : itemList){
                 System.out.println("시스템 알림: 현재 itemList의 값: " + item.getOption().getOptionName());
             }
-            return new OrderResponse.FindAllDTO(itemList, order.get().getId());
+            return new OrderResponse.FindAllDTO(itemList, orderList.get(orderList.size()-1).getId());
            /* for(OrderResponse.FindAllDTO.OrderDTO.ItemDTO itemdto : itemDTO){
                 System.out.println(itemdto.getOption().getOptionName() + "입니다.\n");
             } */
