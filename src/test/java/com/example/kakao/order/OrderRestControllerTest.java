@@ -39,10 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class OrderRestControllerTest extends MyRestDoc {
     @Autowired
     private MockMvc mvc;
-
     @Autowired
     private EntityManager em;
-
     @Autowired
     private OrderJPARepository orderJPARepository;
     @Autowired
