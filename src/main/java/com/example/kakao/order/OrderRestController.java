@@ -32,10 +32,10 @@ public class OrderRestController {
         //CartResponse.FindAllDTOv2 findAllDTOv2 = cartService.findAllv2(userDetails.getUser());
         //List<CartResponse.FindAllDTOv2.ProductDTO> productDTOList = findAllDTOv2.getProducts();
         List<Cart> cartList = cartJPARepository.findAllByUserId(userDetails.getUser().getId());
-        for(Cart cart : cartList){
-            orderService.saveOrder(cart, userDetails.getUser());
-        }
-        OrderResponse.FindAllDTO findAllDTO = orderService.findOrder(cartList.get(cartList.size()-2).getId(),userDetails.getUser().getId());
+        //for(Cart cart : cartList){
+            orderService.saveOrder(userDetails.getUser());
+        //}
+        OrderResponse.FindAllDTO findAllDTO = orderService.findOrder(cartList.get(cartList.size()-1).getId(),userDetails.getUser().getId());
         ApiUtils.ApiResult<?> apiResult = ApiUtils.success(findAllDTO);
         return ResponseEntity.ok(apiResult);
     }

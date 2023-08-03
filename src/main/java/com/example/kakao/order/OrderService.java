@@ -25,7 +25,7 @@ public class OrderService {
     private final ItemJPARepository itemJPARepository;
 
     @Transactional
-    public void saveOrder(Cart carts, User sessionUser){
+    public void saveOrder(User sessionUser){
         Order order = Order.builder().user(sessionUser).build();
         orderJPARepository.save(order); // 주문 기록을 저장합니다.
         List<Order> orderList = orderJPARepository.findOrdersByUser(sessionUser.getId());
@@ -65,7 +65,7 @@ public class OrderService {
 
         // 없으면 예외처리
         if(!orderList.isEmpty()) {
-            List<Item> itemList = itemJPARepository.findByOrder(orderList.get(orderList.size()-1).getUser().getId());
+            List<Item> itemList = itemJPARepository.findByOrder(orderList.get(orderList.size()-1).getId());
             System.out.println("시스템 알림: 주문이 존재합니다.\n");
             for(Item item : itemList){
                 System.out.println("시스템 알림: 현재 itemList의 값: " + item.getOption().getOptionName());
