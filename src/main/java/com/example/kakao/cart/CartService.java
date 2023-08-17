@@ -46,6 +46,7 @@ public class CartService {
             }
         }
         if(isChecked){ // 업데이트 쿼리가 진행되었으면 프로그램 종료
+            isChecked = false;
             return;
         }
 
